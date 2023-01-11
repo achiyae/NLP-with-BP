@@ -30,6 +30,16 @@
             <artifactId>BPjs-Context</artifactId>
             <version>0.5.4</version>
         </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>4.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-remote-driver</artifactId>
+            <version>4.7.0</version>
+        </dependency>
     </dependencies>
 
     <build>

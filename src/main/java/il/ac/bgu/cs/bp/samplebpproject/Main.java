@@ -57,6 +57,7 @@ public class Main {
   private void runProgram() {
     var rnr = new BProgramRunner(bprog);
     rnr.addListener(new PrintBProgramRunnerListener());
+    rnr.addListener(new SeleniumActuator());
     rnr.run();
   }
 }
