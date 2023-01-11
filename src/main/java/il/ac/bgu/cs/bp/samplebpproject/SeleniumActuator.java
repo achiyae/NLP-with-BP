@@ -1,5 +1,6 @@
 package il.ac.bgu.cs.bp.samplebpproject;
 
+import com.google.common.base.Strings;
 import il.ac.bgu.cs.bp.bpjs.execution.listeners.BProgramRunnerListenerAdapter;
 import il.ac.bgu.cs.bp.bpjs.model.BEvent;
 import il.ac.bgu.cs.bp.bpjs.model.BProgram;
@@ -10,17 +11,18 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.util.Map;
 
 public class SeleniumActuator extends BProgramRunnerListenerAdapter {
   private WebDriver driver;
+  private static final int SLEEP = 500;
 
-  private void connect() {
+  private void connect(String url) {
     ChromeOptions options = new ChromeOptions();
-    options.setExperimentalOption("debuggerAddress", "127.0.0.1:4444");
+    options.setExperimentalOption("debuggerAddress", "127.0.0.1:9222");
     driver = new ChromeDriver(options);
+    if(!Strings.isNullOrEmpty(url)) driver.get(url);
   }
 
   private WebElement getElement(final String xpath) {
@@ -47,21 +49,29 @@ public class SeleniumActuator extends BProgramRunnerListenerAdapter {
   @Override
   public void eventSelected(BProgram bp, BEvent e) {
     if (!e.name.equals("Selenium")) return;
+    int sleep = SLEEP;
     var data = (Map<String, Object>) e.maybeData;
     var action = (String) data.get("type");
     var xpath = (String) data.get("xpath");
     var actionData = data.get("data");
     switch (action) {
       case "startSession":
-        connect();
+        connect(xpath);
+        sleep = 2000;
         break;
       case "writeText":
         writeText(xpath, actionData.toString(), false);
         break;
       case "click":
-
+        click(xpath);
+        break;
       default:
-        throw new RuntimeException("Unsupported action");
+        throw new RuntimeException("Unsupported action "+ action);
+    }
+    try {
+      Thread.sleep(sleep);
+    } catch (InterruptedException ex) {
+      throw new RuntimeException(ex);
     }
   }
 }

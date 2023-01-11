@@ -23,6 +23,6 @@ function defineEvent(name, func) {
 }
 
 defineEvent('ProvideInstructions', function (data) {
-  writeText('//textarea[@class="query-box"]', data.instructions)
+  writeText('//textarea[@class="query-box"]', data.instructions.replace(/\r\n/g,""))
   click('//div[@class="submit-button"]')
 })

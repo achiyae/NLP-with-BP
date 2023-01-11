@@ -1,4 +1,5 @@
 const URL = 'https://beta.openai.com/codex-javascript-sandbox'
+// const URL = 'https://beta.openai.com/playground'
 
 bthread('train', function () {
   startSession(URL)
