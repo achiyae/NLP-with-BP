@@ -13,6 +13,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.util.Map;
+import java.util.Random;
 
 public class SeleniumActuator extends BProgramRunnerListenerAdapter {
   private WebDriver driver;
@@ -43,7 +44,31 @@ public class SeleniumActuator extends BProgramRunnerListenerAdapter {
         element.sendKeys(Keys.chord(Keys.CONTROL, "a", Keys.DELETE));
       }
     }
-    element.sendKeys(text);
+    if (charByChar) {
+      var chars = text.chars().toArray();
+      boolean indent = false;
+      for (int i = 0; i < chars.length; i++) {
+        char c = (char) chars[i];
+        var rand = new Random();
+        element.sendKeys("" + c);
+        try {
+          Thread.sleep(rand.nextInt(80) + 0);
+        } catch (InterruptedException e) {
+          throw new RuntimeException(e);
+        }
+        if (c == '\n') {
+          if (indent) {
+            element.sendKeys(Keys.SHIFT, Keys.HOME);
+            element.sendKeys(Keys.BACK_SPACE);
+          }
+          indent = false;
+          if (i < chars.length - 1 && chars[i + 1] == ' ')
+            indent = true;
+        }
+      }
+    } else {
+      element.sendKeys(text);
+    }
   }
 
   @Override
@@ -60,7 +85,7 @@ public class SeleniumActuator extends BProgramRunnerListenerAdapter {
         connect(xpath);
         break;
       case "writeText":
-        var text = (String) ((Map<String, Object>) actionData).get("text");
+        var text = ((Map<String, Object>) actionData).get("text").toString();
         var charByChar = (boolean) ((Map<String, Object>) actionData).get("charByChar");
         var clearText = (boolean) ((Map<String, Object>) actionData).get("clear");
         writeText(xpath, text, charByChar, clearText);

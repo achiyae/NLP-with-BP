@@ -11,8 +11,8 @@ function sleep(millis) {
 }
 
 function writeText(xpath, text, charByChar, clear) {
-  if(charByChar == null) charByChar = false
-  if(clear == null) clear = true
+  if (charByChar == null) charByChar = false
+  if (clear == null) clear = true
   bp.sync({ request: seleniumEvent('writeText', xpath, { text: text, charByChar: charByChar, clear: clear }) })
 }
 
@@ -20,16 +20,9 @@ function click(xpath) {
   bp.sync({ request: seleniumEvent('click', xpath) })
 }
 
-function defineEvent(name, func) {
-  this[name] = function (data) {
-    bp.sync({ request: bp.Event(name, data) })
-    func(data)
-    bp.sync({ request: bp.Event('EndOf(' + name + ')', data) })
-  }
-}
-
 function provideInstructions(instructions) {
-  writeText('//textarea[@id="pg-code-editor-textarea"]', instructions)
+  writeText('//textarea[@id="pg-code-editor-textarea"]', instructions, true, false)
+  // sleep(20 * instructions.length)
 }
 
 function submit() {
@@ -41,30 +34,35 @@ function changeLanguage(lang) {
   writeText('//input[@id="react-select-6-input"]', lang)
 }
 
-function changeMaxTokens(tokens) {
-  writeText('//input[@class="text-input text-input-sm css-17eqq1p"]', tokens)
+function changeTemperature(temp) {
+  writeText('//div[span[text()="Temperature"]]/input[@class="text-input text-input-sm css-17eqq1p"]', temp)
 }
 
-function changeTemprature(temp) {
-  writeText('//dev/input[@class="text-input text-input-sm css-17eqq1p"]', temp)
+function changeMaxTokens(tokens) {
+  writeText('//div[span[text()="Maximum length"]]/input[@class="text-input text-input-sm css-17eqq1p"]', tokens)
+}
+
+function topP(p) {
+  writeText('//div[span[text()="Top P"]]/input[@class="text-input text-input-sm css-17eqq1p"]', p)
+}
+
+function frequencyPenalty(fp) {
+  writeText('//div[span[text()="Frequency penalty"]]/input[@class="text-input text-input-sm css-17eqq1p"]', fp)
+}
+
+function presencePenalty(pp) {
+  writeText('//div[span[text()="Presence penalty"]]/input[@class="text-input text-input-sm css-17eqq1p"]', pp)
 }
 
 function provideTest(data) {
-  writeText('//textarea[@id="pg-code-editor-textarea"]', data)
+  writeText('//textarea[@id="pg-code-editor-textarea"]', data, true, false)
   submit()
 }
 
 function changeModel(model) {
-  writeText('//input[@id="react-select-3-input"]', model, true)
+  writeText('//input[@id="react-select-3-input"]', model, false)
 }
 
 function changeStopSequence(seq) {
   writeText('//input[@id="react-select-4-input"]', seq)
 }
-
-/*
-defineEvent('ProvideInstructions', function (data) {
-  writeText('//textarea[@class="query-box"]', data.instructions.replace(/\r\n/g,""))
-  click('//div[@class="submit-button"]')
-})
-*/

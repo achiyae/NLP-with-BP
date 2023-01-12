@@ -9,7 +9,7 @@ function sample(requirement, code) {
 }
 
 let dataString = loadFile('src/main/resources/train/dal.js') + loadFile('src/main/resources/train/bl.js')
-let dataArray = dataString.replace(/    /g,"\t").replace(/\r\n/g,"\n").split('/*')
+let dataArray = dataString/*.replace(/    /g,"\t")*/.replace(/\r\n/g,"\n").split('/*')
 let trainData = []
 for (let i = 1; i < dataArray.length; i++) {
   let data = dataArray[i].split('*/')
