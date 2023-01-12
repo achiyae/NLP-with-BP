@@ -10,8 +10,10 @@ function sleep(millis) {
   java.lang.Thread.sleep(millis)
 }
 
-function writeText(xpath, text) {
-  bp.sync({ request: seleniumEvent('writeText', xpath, text) })
+function writeText(xpath, text, charByChar, clear) {
+  if(charByChar == null) charByChar = false
+  if(clear == null) clear = true
+  bp.sync({ request: seleniumEvent('writeText', xpath, { text: text, charByChar: charByChar, clear: clear }) })
 }
 
 function click(xpath) {

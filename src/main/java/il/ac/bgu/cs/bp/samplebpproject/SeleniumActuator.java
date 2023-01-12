@@ -22,7 +22,7 @@ public class SeleniumActuator extends BProgramRunnerListenerAdapter {
     ChromeOptions options = new ChromeOptions();
     options.setExperimentalOption("debuggerAddress", "127.0.0.1:9222");
     driver = new ChromeDriver(options);
-    if(!Strings.isNullOrEmpty(url)) driver.get(url);
+    if (!Strings.isNullOrEmpty(url)) driver.get(url);
   }
 
   private WebElement getElement(final String xpath) {
@@ -34,7 +34,7 @@ public class SeleniumActuator extends BProgramRunnerListenerAdapter {
     getElement(xpath).click();
   }
 
-  private void writeText(String xpath, String text, boolean clearBeforeWrite) {
+  private void writeText(String xpath, String text, boolean charByChar, boolean clearBeforeWrite) {
     WebElement element = getElement(xpath);
     if (clearBeforeWrite) {
       if (OS.isFamilyMac()) {
@@ -56,16 +56,20 @@ public class SeleniumActuator extends BProgramRunnerListenerAdapter {
     var actionData = data.get("data");
     switch (action) {
       case "startSession":
+        sleep = 4000;
         connect(xpath);
         break;
       case "writeText":
-        writeText(xpath, actionData.toString(), false);
+        var text = (String) ((Map<String, Object>) actionData).get("text");
+        var charByChar = (boolean) ((Map<String, Object>) actionData).get("charByChar");
+        var clearText = (boolean) ((Map<String, Object>) actionData).get("clear");
+        writeText(xpath, text, charByChar, clearText);
         break;
       case "click":
         click(xpath);
         break;
       default:
-        throw new RuntimeException("Unsupported action "+ action);
+        throw new RuntimeException("Unsupported action " + action);
     }
     try {
       Thread.sleep(sleep);
