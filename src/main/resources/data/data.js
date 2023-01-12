@@ -8,15 +8,18 @@ function sample(requirement, code) {
   return { requirement: requirement, code: code }
 }
 
-let dataString = loadFile('src/main/resources/train/dal.js') + loadFile('src/main/resources/train/dal.js')
-let dataArray = dataString.split('/*')
+let dataString = loadFile('src/main/resources/train/dal.js') + loadFile('src/main/resources/train/bl.js')
+let dataArray = dataString.replace(/    /g,"\t").replace(/\r\n/g,"\n").split('/*')
 let trainData = []
 for (let i = 1; i < dataArray.length; i++) {
   let data = dataArray[i].split('*/')
+  // bp.log.info(data)
   let requirement = '/*' + data[0] + '*/'
   let code = data[1]
   trainData.push(sample(requirement, code))
 }
+
+// bp.log.info(trainData)
 bp.log.info('loaded ' + trainData.length + ' samples')
 
 

@@ -6,6 +6,10 @@ function startSession(url) {
   bp.sync({ request: seleniumEvent('startSession', url) })
 }
 
+function sleep(millis) {
+  java.lang.Thread.sleep(millis)
+}
+
 function writeText(xpath, text) {
   bp.sync({ request: seleniumEvent('writeText', xpath, text) })
 }
@@ -23,13 +27,32 @@ function defineEvent(name, func) {
 }
 
 function provideInstructions(instructions) {
-  writeText('//textarea[@id="pg-code-editor-textarea"]', instructions/*.replace(/\r\n/g,"")*/)
+  writeText('//textarea[@id="pg-code-editor-textarea"]', instructions)
+}
+
+function submit() {
   click('//button[@class="btn btn-sm btn-filled btn-primary pg-submit-btn"]')
+  sleep(10000)
+}
+
+function changeLanguage(lang) {
+  writeText('//input[@id="react-select-6-input"]', lang)
+}
+
+function changeMaxTokens(tokens) {
+  writeText('//input[@class="text-input text-input-sm css-17eqq1p"]', tokens)
+}
+
+function changeTemprature(temp) {
+  writeText('//dev/input[@class="text-input text-input-sm css-17eqq1p"]', temp)
+}
+
+function provideTest(data) {
+  writeText('//textarea[@id="pg-code-editor-textarea"]', data)
+  submit()
 }
 
 function changeModel(model) {
-  // click('//div[@class=" css-bm1710"]')
-  // click('//div[@class="select-dropdown-indicator css-ewq5ei-indicatorContainer"]//div[@text="code-davinci-002"][1]')
   writeText('//input[@id="react-select-3-input"]', model, true)
 }
 
