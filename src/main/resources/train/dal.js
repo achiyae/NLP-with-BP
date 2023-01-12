@@ -1,4 +1,4 @@
-//  1. The game is played on a grid of 3x3 cells.
+/*  1. The game is played on a grid of 3x3 cells.*/
 const boardWidth = 3
 const boardHeight = 3
 let cells = []

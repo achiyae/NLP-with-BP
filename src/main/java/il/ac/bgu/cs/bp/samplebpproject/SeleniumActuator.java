@@ -61,9 +61,11 @@ public class SeleniumActuator extends BProgramRunnerListenerAdapter {
         break;
       case "writeText":
         writeText(xpath, actionData.toString(), false);
+        sleep = 2000;
         break;
       case "click":
         click(xpath);
+        sleep = 2000;
         break;
       default:
         throw new RuntimeException("Unsupported action "+ action);

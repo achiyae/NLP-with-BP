@@ -22,7 +22,24 @@ function defineEvent(name, func) {
   }
 }
 
+function provideInstructions(instructions) {
+  writeText('//textarea[@id="pg-code-editor-textarea"]', instructions/*.replace(/\r\n/g,"")*/)
+  click('//button[@class="btn btn-sm btn-filled btn-primary pg-submit-btn"]')
+}
+
+function changeModel(model) {
+  // click('//div[@class=" css-bm1710"]')
+  // click('//div[@class="select-dropdown-indicator css-ewq5ei-indicatorContainer"]//div[@text="code-davinci-002"][1]')
+  writeText('//input[@id="react-select-3-input"]', model, true)
+}
+
+function changeStopSequence(seq) {
+  writeText('//input[@id="react-select-4-input"]', seq)
+}
+
+/*
 defineEvent('ProvideInstructions', function (data) {
   writeText('//textarea[@class="query-box"]', data.instructions.replace(/\r\n/g,""))
   click('//div[@class="submit-button"]')
 })
+*/
