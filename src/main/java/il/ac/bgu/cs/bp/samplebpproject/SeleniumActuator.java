@@ -37,6 +37,9 @@ public class SeleniumActuator extends BProgramRunnerListenerAdapter {
     return driver.findElement(By.xpath(xpath));
   }
 
+  private void startRecord(String xpath) {
+  }
+
   private void click(String xpath) {
     getElement(xpath).click();
   }
@@ -111,6 +114,9 @@ public class SeleniumActuator extends BProgramRunnerListenerAdapter {
         break;
       case "waitForVisibility":
         waitForVisibility(xpath);
+        break;
+      case "startRecord":
+        startRecord(xpath);
         break;
       default:
         throw new RuntimeException("Unsupported action " + action);

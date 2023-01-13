@@ -14,6 +14,14 @@ function waitForVisibility(xpath) {
   bp.sync({ request: seleniumEvent('waitForVisibility', xpath) })
 }
 
+function startRecord(filename){
+  bp.sync({request: seleniumEvent('startRecord', filename)})
+}
+
+function stopRecord(){
+  bp.sync({request: seleniumEvent('stopRecord')})
+}
+
 function writeText(xpath, text, charByChar, clear) {
   if (charByChar == null) charByChar = 0
   if (clear == null) clear = true

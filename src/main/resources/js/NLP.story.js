@@ -3,8 +3,8 @@ const URL = 'https://beta.openai.com/playground'
 
 bthread('train', function () {
   startSession(URL)
-
-  changeStopSequence('Example:\n') //\n\n\n\n
+  // startRecord('demo.avi')
+  changeStopSequence('Example:\n/*\n') //\n\n\n\n
   changeModel('code-davinci-002\n')
   changeLanguage('JavaScript\n')
   changeMaxTokens('1000')
@@ -22,4 +22,5 @@ bthread('train', function () {
     provideInstructions(testData[i]+'\n', 80)
     submit()
   }
+  // stopRecord()
 })
