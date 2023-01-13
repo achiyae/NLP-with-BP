@@ -26,9 +26,9 @@ bp.log.info('loaded ' + trainData.length + ' samples')
 let testData=[
   '/* Each product has: id, type, color, and size */',
   '/* A user can place products in the cart */',
-  '/* once the cart has items, the user can checkout */',
-/*  '/!*  *!/',
-  '/!*  *!/',
-  '/!*  *!/',
-  '/!*  *!/',*/
+  '/* The user places three products to the cart and then checkouts */',
+  // '/!*  *!/',
+  /*  '/!*  *!/',
+    '/!*  *!/',
+    '/!*  *!/',*/
 ]
