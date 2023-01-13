@@ -26,7 +26,6 @@ for (let i = 0; i < boardWidth; i++) {
         }
         rows.push(ctx.Entity('Vertical from (' + i + ',' + j + ')to (' + i + ',' + (j + rowLength - 1) + ')', '3CellsInARow', { cells: row }))
     }
-
 }
 for (let i = 0; i < boardHeight; i++) {
     for (let j = 0; j < boardWidth - (rowLength - 1); j++) {
@@ -57,3 +56,5 @@ for (let i = 0; i < boardWidth - (rowLength - 1); i++) {
 }
 ctx.populateContext(rows)
 ctx.registerQuery('3CellsInARow', entity => entity.type == String('3CellsInARow'))
+
+

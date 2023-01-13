@@ -10,8 +10,12 @@ function sleep(millis) {
   java.lang.Thread.sleep(millis)
 }
 
+function waitForVisibility(xpath) {
+  bp.sync({ request: seleniumEvent('waitForVisibility', xpath) })
+}
+
 function writeText(xpath, text, charByChar, clear) {
-  if (charByChar == null) charByChar = false
+  if (charByChar == null) charByChar = 0
   if (clear == null) clear = true
   bp.sync({ request: seleniumEvent('writeText', xpath, { text: text, charByChar: charByChar, clear: clear }) })
 }
@@ -20,14 +24,15 @@ function click(xpath) {
   bp.sync({ request: seleniumEvent('click', xpath) })
 }
 
-function provideInstructions(instructions) {
-  writeText('//textarea[@id="pg-code-editor-textarea"]', instructions, true, false)
+function provideInstructions(instructions, charByChar) {
+  writeText('//textarea[@id="pg-code-editor-textarea"]', instructions, charByChar, false)
   // sleep(20 * instructions.length)
 }
 
 function submit() {
   click('//button[@class="btn btn-sm btn-filled btn-primary pg-submit-btn"]')
-  sleep(10000)
+  waitForVisibility('//button[@class="btn btn-sm btn-filled btn-primary pg-submit-btn"]')
+  // sleep(10000)
 }
 
 function changeLanguage(lang) {
@@ -54,13 +59,8 @@ function presencePenalty(pp) {
   writeText('//div[span[text()="Presence penalty"]]/input[@class="text-input text-input-sm css-17eqq1p"]', pp)
 }
 
-function provideTest(data) {
-  writeText('//textarea[@id="pg-code-editor-textarea"]', data, true, false)
-  submit()
-}
-
 function changeModel(model) {
-  writeText('//input[@id="react-select-3-input"]', model, false)
+  writeText('//input[@id="react-select-3-input"]', model)
 }
 
 function changeStopSequence(seq) {

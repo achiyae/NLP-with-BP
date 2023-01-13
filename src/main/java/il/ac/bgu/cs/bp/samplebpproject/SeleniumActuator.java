@@ -11,12 +11,18 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.FluentWait;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Function;
+
+import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
 
 public class SeleniumActuator extends BProgramRunnerListenerAdapter {
-  private WebDriver driver;
+  private RemoteWebDriver driver;
   private static final int SLEEP = 500;
 
   private void connect(String url) {
@@ -35,7 +41,14 @@ public class SeleniumActuator extends BProgramRunnerListenerAdapter {
     getElement(xpath).click();
   }
 
-  private void writeText(String xpath, String text, boolean charByChar, boolean clearBeforeWrite) {
+  private void waitForVisibility(String xpath) {
+    var wait = new FluentWait<>(driver);
+    /*int timeoutInMillis = 20000;
+    wait = wait.withTimeout(Duration.ofMillis(timeoutInMillis));*/
+    wait.until((Function) visibilityOfElementLocated(By.xpath(xpath)));
+  }
+
+  private void writeText(String xpath, String text, int charByChar, boolean clearBeforeWrite) {
     WebElement element = getElement(xpath);
     if (clearBeforeWrite) {
       if (OS.isFamilyMac()) {
@@ -44,30 +57,33 @@ public class SeleniumActuator extends BProgramRunnerListenerAdapter {
         element.sendKeys(Keys.chord(Keys.CONTROL, "a", Keys.DELETE));
       }
     }
-    if (charByChar) {
-      var chars = text.chars().toArray();
-      boolean indent = false;
-      for (int i = 0; i < chars.length; i++) {
-        char c = (char) chars[i];
-        var rand = new Random();
-        element.sendKeys("" + c);
-        try {
-          Thread.sleep(rand.nextInt(80) + 0);
-        } catch (InterruptedException e) {
-          throw new RuntimeException(e);
-        }
-        if (c == '\n') {
-          if (indent) {
-            element.sendKeys(Keys.SHIFT, Keys.HOME);
-            element.sendKeys(Keys.BACK_SPACE);
-          }
-          indent = false;
-          if (i < chars.length - 1 && chars[i + 1] == ' ')
-            indent = true;
-        }
+    var lines = text.lines().toArray(String[]::new);
+    boolean indent = false;
+    for (int i = 0; i < lines.length; i++) {
+      var line = lines[i]+'\n';
+      if (indent) {
+        element.sendKeys(Keys.SHIFT, Keys.HOME);
+        element.sendKeys(Keys.BACK_SPACE);
       }
-    } else {
-      element.sendKeys(text);
+      indent = line.charAt(0) == ' ';
+
+      if (charByChar > 0) {
+        var chars = line.chars().toArray();
+        for (int j = 0; j < chars.length; j++) {
+          char c = (char) chars[j];
+          element.sendKeys("" + c);
+          var rand = new Random();
+          if (charByChar > 0) {
+            try {
+              Thread.sleep(rand.nextInt(charByChar));
+            } catch (InterruptedException e) {
+              throw new RuntimeException(e);
+            }
+          }
+        }
+      } else {
+        element.sendKeys(line);
+      }
     }
   }
 
@@ -86,12 +102,15 @@ public class SeleniumActuator extends BProgramRunnerListenerAdapter {
         break;
       case "writeText":
         var text = ((Map<String, Object>) actionData).get("text").toString();
-        var charByChar = (boolean) ((Map<String, Object>) actionData).get("charByChar");
+        var charByChar = (int) (double) ((Map<String, Object>) actionData).get("charByChar");
         var clearText = (boolean) ((Map<String, Object>) actionData).get("clear");
         writeText(xpath, text, charByChar, clearText);
         break;
       case "click":
         click(xpath);
+        break;
+      case "waitForVisibility":
+        waitForVisibility(xpath);
         break;
       default:
         throw new RuntimeException("Unsupported action " + action);
