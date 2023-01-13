@@ -43,8 +43,8 @@ public class SeleniumActuator extends BProgramRunnerListenerAdapter {
 
   private void waitForVisibility(String xpath) {
     var wait = new FluentWait<>(driver);
-    /*int timeoutInMillis = 20000;
-    wait = wait.withTimeout(Duration.ofMillis(timeoutInMillis));*/
+    int timeoutInMillis = 60000;
+    wait = wait.withTimeout(Duration.ofMillis(timeoutInMillis));
     wait.until((Function) visibilityOfElementLocated(By.xpath(xpath)));
   }
 

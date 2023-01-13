@@ -23,7 +23,6 @@ for (let i = 1; i < dataArray.length; i++) {
 bp.log.info('loaded ' + trainData.length + ' samples')
 
 
-
 let testData=[
   '/* Each product has: id, type, color, and size */',
   '/* A user can place products in the cart */',
