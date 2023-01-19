@@ -18,13 +18,19 @@ function preparePlayground(movie) {
 function train(movie) {
   if (movie) {
     for (let i = 0; i < trainData.length; i++) {
-      writeInstructions('Example: ' + trainData[i].requirement + '\n', i < 2 ? 80 : 0)
-      writeInstructions('Output:' + trainData[i].code, i < 2 ? 80 : 0)
+      if(i < 2 ) {
+        writeInstructions('Example: ' + trainData[i].requirement + '\n', 80)
+        writeInstructions('Output:' + trainData[i].code, 80)
+      }
+      else {
+        pasteInstructions('Example: ' + trainData[i].requirement + '\n' + 'Output:' + trainData[i].code)
+      }
     }
   } else {
     pasteInstructions(
       trainData.map(sample => 'Example: ' + sample.requirement + '\n' + 'Output:' + sample.code).join(''))
   }
+  writeInstructions('// Till here - training./*')
   submit()
 }
 
