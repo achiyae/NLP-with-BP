@@ -1,5 +1,22 @@
+function Event(name, data) {
+  if (data)
+    return bp.Event(name, data)
+  else
+    return bp.Event(name)
+}
+
+/**
+ * Waits for an event or an event name
+ * @param {string|Event}event
+ */
+function waitFor(event) {
+  if (typeof (event) === 'string')
+    event = bp.EventSet('', e => e.name == event)
+  bp.sync({ waitFor: event })
+}
+
 function seleniumEvent(name, xpath, data) {
-  return bp.Event('Selenium', { type: name, xpath: xpath, data: data })
+  return Event('Selenium', { type: name, xpath: xpath, data: data })
 }
 
 function startSession(url) {
@@ -14,12 +31,12 @@ function waitForVisibility(xpath) {
   bp.sync({ request: seleniumEvent('waitForVisibility', xpath) })
 }
 
-function startRecord(filename){
-  bp.sync({request: seleniumEvent('startRecord', filename)})
+function startRecord(filename) {
+  bp.sync({ request: seleniumEvent('startRecord', filename) })
 }
 
-function stopRecord(){
-  bp.sync({request: seleniumEvent('stopRecord')})
+function stopRecord() {
+  bp.sync({ request: seleniumEvent('stopRecord') })
 }
 
 function writeText(xpath, text, charByChar, clear) {
@@ -28,23 +45,34 @@ function writeText(xpath, text, charByChar, clear) {
   bp.sync({ request: seleniumEvent('writeText', xpath, { text: text, charByChar: charByChar, clear: clear }) })
 }
 
+function pasteText(xpath, text, clear) {
+  if (clear == null) clear = true
+  bp.sync({ request: seleniumEvent('pasteText', xpath, { text: text, clear: clear }) })
+}
+
 function click(xpath) {
   bp.sync({ request: seleniumEvent('click', xpath) })
 }
 
-function provideInstructions(instructions, charByChar) {
+function writeInstructions(instructions, charByChar) {
   writeText('//textarea[@id="pg-code-editor-textarea"]', instructions, charByChar, false)
   // sleep(20 * instructions.length)
 }
 
+function pasteInstructions(instructions, charByChar) {
+  pasteText('//textarea[@id="pg-code-editor-textarea"]', instructions, false)
+}
+
+
 function submit() {
+  waitForVisibility('//button[@class="btn btn-sm btn-filled btn-primary pg-submit-btn"]')
   click('//button[@class="btn btn-sm btn-filled btn-primary pg-submit-btn"]')
   waitForVisibility('//button[@class="btn btn-sm btn-filled btn-primary pg-submit-btn"]')
   // sleep(10000)
 }
 
 function changeLanguage(lang) {
-  writeText('//input[@id="react-select-6-input"]', lang)
+  writeText('//input[@id="react-select-6-input"]', lang, 1)
 }
 
 function changeTemperature(temp) {

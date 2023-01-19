@@ -14,6 +14,9 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.FluentWait;
 
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Random;
@@ -51,8 +54,7 @@ public class SeleniumActuator extends BProgramRunnerListenerAdapter {
     wait.until((Function) visibilityOfElementLocated(By.xpath(xpath)));
   }
 
-  private void writeText(String xpath, String text, int charByChar, boolean clearBeforeWrite) {
-    WebElement element = getElement(xpath);
+  private void clearText(WebElement element, boolean clearBeforeWrite) {
     if (clearBeforeWrite) {
       if (OS.isFamilyMac()) {
         element.sendKeys(Keys.chord(Keys.COMMAND, "a", Keys.DELETE));
@@ -60,32 +62,41 @@ public class SeleniumActuator extends BProgramRunnerListenerAdapter {
         element.sendKeys(Keys.chord(Keys.CONTROL, "a", Keys.DELETE));
       }
     }
+  }
+
+  private void pasteText(String xpath, String text, boolean clearBeforeWrite) {
+    WebElement element = getElement(xpath);
+    clearText(element, clearBeforeWrite);
+    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+    clipboard.setContents(new StringSelection(text), null);
+    element.sendKeys(Keys.CONTROL, "v");
+  }
+
+  private void writeText(String xpath, String text, int charByChar, boolean clearBeforeWrite) {
+    WebElement element = getElement(xpath);
+    clearText(element, clearBeforeWrite);
     var lines = text.lines().toArray(String[]::new);
     boolean indent = false;
-    for (int i = 0; i < lines.length; i++) {
-      var line = lines[i]+'\n';
+    for (String s : lines) {
+      var line = s + '\n';
       if (indent) {
         element.sendKeys(Keys.SHIFT, Keys.HOME);
         element.sendKeys(Keys.BACK_SPACE);
       }
       indent = line.charAt(0) == ' ';
 
-      if (charByChar > 0) {
-        var chars = line.chars().toArray();
-        for (int j = 0; j < chars.length; j++) {
-          char c = (char) chars[j];
-          element.sendKeys("" + c);
+      var chars = line.chars().toArray();
+      for (int aChar : chars) {
+        char c = (char) aChar;
+        element.sendKeys("" + c);
+        if (charByChar > 0) {
           var rand = new Random();
-          if (charByChar > 0) {
-            try {
-              Thread.sleep(rand.nextInt(charByChar));
-            } catch (InterruptedException e) {
-              throw new RuntimeException(e);
-            }
+          try {
+            Thread.sleep(rand.nextInt(charByChar));
+          } catch (InterruptedException e) {
+            throw new RuntimeException(e);
           }
         }
-      } else {
-        element.sendKeys(line);
       }
     }
   }
@@ -104,10 +115,14 @@ public class SeleniumActuator extends BProgramRunnerListenerAdapter {
         connect(xpath);
         break;
       case "writeText":
+      case "pasteText":
         var text = ((Map<String, Object>) actionData).get("text").toString();
-        var charByChar = (int) (double) ((Map<String, Object>) actionData).get("charByChar");
+        var charByChar = (int) (double) ((Map<String, Object>) actionData).getOrDefault("charByChar", 0.0);
         var clearText = (boolean) ((Map<String, Object>) actionData).get("clear");
-        writeText(xpath, text, charByChar, clearText);
+        if (action.equals("writeText"))
+          writeText(xpath, text, charByChar, clearText);
+        else
+          pasteText(xpath, text, clearText);
         break;
       case "click":
         click(xpath);

@@ -1,26 +1,42 @@
 // const URL = 'https://beta.openai.com/codex-javascript-sandbox'
 const URL = 'https://beta.openai.com/playground'
+const MOVIE = false
 
-bthread('train', function () {
+function preparePlayground(movie) {
   startSession(URL)
-  // startRecord('demo.avi')
   changeStopSequence('Example:\n/*\n') //\n\n\n\n
   changeModel('code-davinci-002\n')
-  changeLanguage('JavaScript\n')
   changeMaxTokens('1000')
   changeTemperature('0')
   topP('1')
   frequencyPenalty('0.2')
   presencePenalty('0')
+  changeLanguage('JavaScript\n')
+}
 
-  for (let i = 0; i < trainData.length; i++) {
-    provideInstructions('Example: ' + trainData[i].requirement + '\n', i<2 ? 80 : 0)
-    provideInstructions('Output:' + trainData[i].code, i<2 ? 80 : 0)
+
+function train(movie) {
+  if (movie) {
+    for (let i = 0; i < trainData.length; i++) {
+      writeInstructions('Example: ' + trainData[i].requirement + '\n', i < 2 ? 80 : 0)
+      writeInstructions('Output:' + trainData[i].code, i < 2 ? 80 : 0)
+    }
+  } else {
+    pasteInstructions(
+      trainData.map(sample => 'Example: ' + sample.requirement + '\n' + 'Output:' + sample.code).join(''))
   }
   submit()
+}
+
+function test() {
   for (let i = 0; i < testData.length; i++) {
-    provideInstructions(testData[i]+'\n', 80)
+    writeInstructions(testData[i] + '\n', 80)
     submit()
   }
-  // stopRecord()
+}
+
+bthread('train', function () {
+  preparePlayground(MOVIE)
+  train(MOVIE)
+  test()
 })

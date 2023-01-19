@@ -47,4 +47,3 @@ bthread('5. When all 9 cells have been marked with X and O and no player won, it
     sync({ block: bp.all })
 })
 
-
