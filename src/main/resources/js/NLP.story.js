@@ -36,7 +36,7 @@ function train(movie) {
 
 function test() {
   for (let i = 0; i < testData.length; i++) {
-    writeInstructions(testData[i] + '\n', 80)
+    writeInstructions('Example: '+testData[i] + '\n', 80)//TODO check if adding 'Output:' is also needed
     submit()
   }
 }
