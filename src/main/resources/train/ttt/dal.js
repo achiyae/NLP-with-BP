@@ -56,5 +56,3 @@ for (let i = 0; i < boardWidth - (rowLength - 1); i++) {
 }
 ctx.populateContext(rows)
 ctx.registerQuery('3CellsInARow', entity => entity.type == String('3CellsInARow'))
-
-
