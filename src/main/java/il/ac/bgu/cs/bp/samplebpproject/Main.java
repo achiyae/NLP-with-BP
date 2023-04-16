@@ -6,7 +6,6 @@ import il.ac.bgu.cs.bp.bpjs.context.ContextBProgram;
 import il.ac.bgu.cs.bp.bpjs.execution.BProgramRunner;
 import il.ac.bgu.cs.bp.bpjs.execution.listeners.PrintBProgramRunnerListener;
 import il.ac.bgu.cs.bp.bpjs.model.*;
-import il.ac.bgu.cs.bp.bpjs.model.eventselection.PrioritizedBSyncEventSelectionStrategy;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,13 +15,6 @@ import java.text.MessageFormat;
 
 public class Main {
   private BProgram bprog;
-
-  private String[] listTrainFiles() throws IOException {
-    return Files.find(Paths.get("src/main/resources/train"),
-      Integer.MAX_VALUE,
-      (filePath, fileAttr) -> fileAttr.isRegularFile() && filePath.getFileName().toString().endsWith(".js"))
-      .map(Path::toString).toArray(String[]::new);
-  }
 
   public static void main(String[] args) throws IOException {
     var main = new Main();
@@ -38,7 +30,6 @@ public class Main {
 
   private void createBProgam() throws IOException {
     this.bprog = new ContextBProgram("data/data.js", "js/EventDef.js", "js/NLP.dal.js", "js/NLP.story.js");
-    bprog.putInGlobalScope("TrainFiles", listTrainFiles());
 //     bprog.setEventSelectionStrategy(new PrioritizedBSyncEventSelectionStrategy());
   }
 

@@ -55,12 +55,12 @@ function click(xpath) {
 }
 
 function writeInstructions(instructions, charByChar) {
-  writeText('//textarea[@id="pg-code-editor-textarea"]', instructions, charByChar, false)
+  writeText('//div[@class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"][last()]', instructions, charByChar, false)
   // sleep(20 * instructions.length)
 }
 
 function pasteInstructions(instructions, charByChar) {
-  pasteText('//textarea[@id="pg-code-editor-textarea"]', instructions, false)
+  pasteText('//div[@class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"][last()]', instructions, false)
 }
 
 
@@ -96,9 +96,9 @@ function presencePenalty(pp) {
 }
 
 function changeModel(model) {
-  writeText('//input[@id="react-select-3-input"]', model)
+  writeText('//input[@id="react-select-4-input"]', model)
 }
 
 function changeStopSequence(seq) {
-  writeText('//input[@id="react-select-4-input"]', seq)
+  writeText('//input[@id="react-select-5-input"]', seq)
 }

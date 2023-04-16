@@ -1,11 +1,15 @@
 // const URL = 'https://beta.openai.com/codex-javascript-sandbox'
 const URL = 'https://beta.openai.com/playground'
+const TRAIN_PATH = "src/main/resources/train/Magento";
+const TEST_PATH = "src/main/resources/test/MeetTheBanker";
 const MOVIE = false
+let trainData = []
+let testData = []
 
 function preparePlayground(movie) {
   startSession(URL)
   changeStopSequence('Example:\n/*\n') //\n\n\n\n
-  changeModel('code-davinci-002\n')
+  changeModel('text-davinci-003\n')
   changeMaxTokens('1000')
   changeTemperature('0')
   topP('1')
@@ -14,6 +18,10 @@ function preparePlayground(movie) {
   changeLanguage('JavaScript\n')
 }
 
+function loadData() {
+  trainData = prepareData(TRAIN_PATH, '.js')
+  testData = prepareData(TEST_PATH, '.txt')
+}
 
 function train(movie) {
   if (movie) {
@@ -30,7 +38,7 @@ function train(movie) {
     pasteInstructions(
       trainData.map(sample => 'Example: ' + sample.requirement + '\n' + 'Output:' + sample.code).join(''))
   }
-  writeInstructions('// Till here - training./*')
+  writeInstructions('\n\n// Till here - training./*')
   submit()
 }
 
@@ -42,6 +50,7 @@ function test() {
 }
 
 bthread('train', function () {
+  loadData()
   preparePlayground(MOVIE)
   train(MOVIE)
   test()

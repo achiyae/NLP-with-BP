@@ -10,6 +10,7 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.FluentWait;
@@ -29,8 +30,11 @@ public class SeleniumActuator extends BProgramRunnerListenerAdapter {
   private static final int SLEEP = 500;
 
   private void connect(String url) {
+    System.setProperty("webdriver.http.factory", "jdk-http-client");
     ChromeOptions options = new ChromeOptions();
-    options.setExperimentalOption("debuggerAddress", "127.0.0.1:9222");
+    options.setExperimentalOption("debuggerAddress", "localhost:9222");
+//    options.addArguments("--remote-allow-origins=*");
+    options.addArguments("--remote-allow-origins=*","ignore-certificate-errors");
     driver = new ChromeDriver(options);
     if (!Strings.isNullOrEmpty(url)) driver.get(url);
   }

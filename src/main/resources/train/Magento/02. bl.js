@@ -79,3 +79,4 @@ ctx.bthread('An admin can give products a discount of 10%, 25%, or 50%', ['User.
   let percentage = choose([0.1, 0.25, 0.5])
   sync({request: discount(admin, product, percentage)})
 })
+
