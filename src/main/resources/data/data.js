@@ -18,13 +18,13 @@ function sample(requirement, code) {
 function prepareData(path, type) {
   let files = listFiles(path, type)
   let dataString = files.map(f => loadFile(f)).join('')
-  let dataArray = dataString.replace(/\r\n/g, '\n').split('/*')
+  let dataArray = dataString.replace(/\r\n/g, '\n').replace(/\n\n/g, '\n').split('/*')
   let ret = []
   for (let i = 1; i < dataArray.length; i++) {
     let data = dataArray[i].split('*/')
     // bp.log.info(data)
     let requirement = '/*' + data[0] + '*/'
-    let code = data[1]
+    let code = type=='.txt' ? null : data[1]
     ret.push(sample(requirement, code))
   }
 // bp.log.info(trainData)

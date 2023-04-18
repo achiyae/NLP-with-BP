@@ -44,7 +44,7 @@ function train(movie) {
 
 function test() {
   for (let i = 0; i < testData.length; i++) {
-    writeInstructions('Example: '+testData[i] + '\n', 80)//TODO check if adding 'Output:' is also needed
+    writeInstructions('Example: '+testData[i].requirement + '\n\n', 80)//TODO check if adding 'Output:' is also needed
     submit()
   }
 }
