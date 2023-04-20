@@ -10,7 +10,7 @@ function preparePlayground(movie) {
   startSession(URL)
   changeStopSequence('/*\n') //\n\n\n\n
   changeModel('text-davinci-003\n')
-  changeMaxTokens('1000')
+  changeMaxTokens('1300')
   changeTemperature('0')
   topP('1')
   frequencyPenalty('0.2')
@@ -43,7 +43,7 @@ function train(movie) {
 
 function test() {
   for (let i = 0; i < testData.length; i++) {
-    writeInstructions(testData[i].requirement, 80)
+    writeInstructions('\n' + testData[i].requirement, 60)
     submit()
   }
 }
