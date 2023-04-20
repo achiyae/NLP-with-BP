@@ -1,21 +1,21 @@
 // const URL = 'https://beta.openai.com/codex-javascript-sandbox'
 const URL = 'https://beta.openai.com/playground'
-const TRAIN_PATH = "src/main/resources/train/Magento";
-const TEST_PATH = "src/main/resources/test/MeetTheBanker";
+const TRAIN_PATH = 'src/main/resources/train/Magento'
+const TEST_PATH = 'src/main/resources/test/MeetTheBanker'
 const MOVIE = false
 let trainData = []
 let testData = []
 
 function preparePlayground(movie) {
   startSession(URL)
-  changeStopSequence('Example:\n/*\n') //\n\n\n\n
+  changeStopSequence('/*\n') //\n\n\n\n
   changeModel('text-davinci-003\n')
   changeMaxTokens('1000')
   changeTemperature('0')
   topP('1')
   frequencyPenalty('0.2')
   presencePenalty('0')
-  changeLanguage('JavaScript\n')
+  // changeLanguage('JavaScript\n')
 }
 
 function loadData() {
@@ -26,25 +26,24 @@ function loadData() {
 function train(movie) {
   if (movie) {
     for (let i = 0; i < trainData.length; i++) {
-      if(i < 2 ) {
-        writeInstructions('Example: ' + trainData[i].requirement + '\n', 80)
-        writeInstructions('Output:' + trainData[i].code, 80)
-      }
-      else {
-        pasteInstructions('Example: ' + trainData[i].requirement + '\n' + 'Output:' + trainData[i].code)
+      if (i < 2) {
+        writeInstructions(trainData[i].requirement, 80)
+        writeInstructions(trainData[i].code, 80)
+      } else {
+        pasteInstructions(trainData[i].requirement + trainData[i].code + '\n')
       }
     }
   } else {
     pasteInstructions(
-      trainData.map(sample => 'Example: ' + sample.requirement + '\n' + 'Output:' + sample.code).join(''))
+      trainData.map(sample => sample.requirement + sample.code + '\n').join(''))
   }
-  writeInstructions('\n\n// Till here - training./*')
+  // writeInstructions('\n\n/* Till here - training\n')
   submit()
 }
 
 function test() {
   for (let i = 0; i < testData.length; i++) {
-    writeInstructions('Example: '+testData[i].requirement + '\n\n', 80)//TODO check if adding 'Output:' is also needed
+    writeInstructions(testData[i].requirement, 80)
     submit()
   }
 }

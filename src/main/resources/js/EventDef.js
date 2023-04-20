@@ -1,3 +1,5 @@
+const INSTRUCTION_XPATH = '//div[@class="notranslate public-DraftEditor-content"]/div/div[last()]'
+
 function Event(name, data) {
   if (data)
     return bp.Event(name, data)
@@ -55,12 +57,12 @@ function click(xpath) {
 }
 
 function writeInstructions(instructions, charByChar) {
-  writeText('//div[@class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"][last()]', instructions, charByChar, false)
+  writeText(INSTRUCTION_XPATH, instructions, charByChar, false)
   // sleep(20 * instructions.length)
 }
 
 function pasteInstructions(instructions, charByChar) {
-  pasteText('//div[@class="public-DraftStyleDefault-block public-DraftStyleDefault-ltr"][last()]', instructions, false)
+  pasteText(INSTRUCTION_XPATH, instructions, false)
 }
 
 

@@ -79,6 +79,7 @@ public class SeleniumActuator extends BProgramRunnerListenerAdapter {
   private void writeText(String xpath, String text, int charByChar, boolean clearBeforeWrite) {
     WebElement element = getElement(xpath);
     clearText(element, clearBeforeWrite);
+    var rand = new Random();
     var lines = text.lines().toArray(String[]::new);
     boolean indent = false;
     for (String s : lines) {
@@ -92,16 +93,26 @@ public class SeleniumActuator extends BProgramRunnerListenerAdapter {
       var chars = line.chars().toArray();
       for (int aChar : chars) {
         char c = (char) aChar;
-        element.sendKeys("" + c);
+        if(c=='\n') {
+          element.sendKeys("" + c);
+//          element.sendKeys(Keys.RETURN);
+//          sleep(rand.nextInt(500));
+//          element = getElement(xpath);
+        } else {
+          element.sendKeys("" + c);
+        }
         if (charByChar > 0) {
-          var rand = new Random();
-          try {
-            Thread.sleep(rand.nextInt(charByChar));
-          } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-          }
+          sleep(rand.nextInt(charByChar));
         }
       }
+    }
+  }
+
+  private static void sleep(int millis) {
+    try {
+      Thread.sleep(millis);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -140,10 +151,6 @@ public class SeleniumActuator extends BProgramRunnerListenerAdapter {
       default:
         throw new RuntimeException("Unsupported action " + action);
     }
-    try {
-      Thread.sleep(sleep);
-    } catch (InterruptedException ex) {
-      throw new RuntimeException(ex);
-    }
+    sleep(sleep);
   }
 }
