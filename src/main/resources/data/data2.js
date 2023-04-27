@@ -14,27 +14,11 @@
 function snippet(requirement, code) {
   return { requirement: requirement, code: code, isGiven: false }
 }
-//
-// function prepareData(path, type) {
-//   let files = listFiles(path, type)
-//   let dataString = files.map(f => loadFile(f)).join('')
-//   let dataArray = dataString.replace(/\r\n/g, '\n').replace(/\n\n/g, '\n').split('/*')
-//   let ret = []
-//   for (let i = 1; i < dataArray.length; i++) {
-//     let data = dataArray[i].split('*/')
-//     // bp.log.info(data)
-//     let requirement = '/*' + data[0] + '*/'
-//     let code = type=='.txt' ? null : data[1]
-//     ret.push(snippet(requirement, code))
-//   }
-// // bp.log.info(trainData)
-//   if (type == '.txt')
-//     bp.log.info('loaded ' + ret.length + ' test samples')
-//   else
-//     bp.log.info('loaded ' + ret.length + ' train samples')
-//
-//   return ret
-// }
+//for backward compatibility
+function prepareData(path, type=null) {
+    return parseSnippetsFile(path);
+
+}
 const fs = require('fs');
 
 /**
