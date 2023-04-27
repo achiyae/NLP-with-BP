@@ -19,8 +19,8 @@ function preparePlayground(movie) {
 }
 
 function loadData() {
-  trainData = prepareData(TRAIN_PATH, '.js')
-  testData = prepareData(TEST_PATH, '.txt')
+  trainData = prepareData(TRAIN_PATH, '.js')//for data 2 version, call get getGivenSnippets(prepareData(TRAIN_PATH))
+  testData = prepareData(TEST_PATH, '.txt')//for data 2 version, call get getUnGivenSnippets(prepareData(TEST_PATH))
 }
 
 function train(movie) {
