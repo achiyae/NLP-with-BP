@@ -40,7 +40,7 @@ function parseSnippetsFile(path) {
     let line = lines[i]//.trim();
 
     if(line.startsWith('//region')) {
-      isRegion = true;;
+      isRegion = true;
       continue;
     }
     if(line.startsWith('//endregion')) {
@@ -54,12 +54,12 @@ function parseSnippetsFile(path) {
     if(line.startsWith('//Requirement:')) {
         lineStartsWithRequirement = '//Requirement:';
     }
-    if (lineStartsWithRequirement != "") {
+    if (lineStartsWithRequirement !== "") {
       currentSnippet.requirement = line.slice(lineStartsWithRequirement.length).trim();
       //if requirement is empty, it actually starts in the next line with /* and ends in some line that ends with */
-        if (currentSnippet.requirement.trim() == "") {
+        if (currentSnippet.requirement.trim() === "") {
             let j = i + 1;
-            while (lines[j].trim().endsWith('*/') == false) {
+            while (lines[j].trim().endsWith('*/') === false) {
                 currentSnippet.requirement += lines[j] + '\n';
                 j++;
             }
@@ -70,7 +70,7 @@ function parseSnippetsFile(path) {
       //The code starts in the next line and ends in a line that starts with //endregion or //region or //Requirement(not including) or end of file
         let j = i + 1;
       currentSnippet.code = '';
-        while ( j < lines.length && lines[j].trim().startsWith('//') == false) {
+        while ( j < lines.length && lines[j].trim().startsWith('//') === false) {
             currentSnippet.code += lines[j] + '\n';
             j++;
         }
@@ -121,9 +121,18 @@ function getRequirementWithFormat(snippet) {
 function getOutputWithFormat(snippet) {
     return '//Output:\n' + snippet.code;
 }
-function formatSnippet(snippetExample) {
+function formatSnippetWithoutRegions(snippetExample) {
     return snippet(getRequirementWithFormat(snippetExample), getOutputWithFormat(snippetExample));
 }
+function formatSnippetWithRegions(snippetExample) {
+    if(snippetExample.isGiven)
+        return snippet('//region\n' + getRequirementWithFormat(snippetExample), getOutputWithFormat(snippetExample) + '\n//endregion');
+    else
+        return formatSnippetWithoutRegions(snippetExample);
+}
+// function formatSnippet(snippetExample) {
+//     return snippet(getRequirementWithFormat(snippetExample), getOutputWithFormat(snippetExample));
+// }
 
 // const snippets = parseSnippetsFile('store_entities_behaviors_updated.js');
 // console.log(snippets);

@@ -8,7 +8,7 @@ let testData = []
 
 function preparePlayground(movie) {
   startSession(URL)
-  changeStopSequence('/*\n') //\n\n\n\n
+  changeStopSequence('/*\n//region\n//Requirement') //\n\n\n\n
   changeModel('text-davinci-003\n')
   changeMaxTokens('1300')
   changeTemperature('0')
@@ -22,14 +22,14 @@ function preparePlayground(movie) {
  * @param dataOneOrTwo 1 for the data.js configuration(for back support), 2 for the data2.js configuration(new implementation)
  */
 function loadData(dataOneOrTwo) {
-  if (dataOneOrTwo == 1) {
+  if (dataOneOrTwo === 1) {
     trainData = prepareData(TRAIN_PATH, '.js')
     testData = prepareData(TEST_PATH, '.txt')
 
   }
-    else if (dataOneOrTwo == 2) {
-    trainData = getGivenSnippets(prepareData(TRAIN_PATH)).map(sample => formatSnippet(sample));
-    testData = getUnGivenSnippets(prepareData(TEST_PATH)).map(sample => formatSnippet(sample));
+    else if (dataOneOrTwo === 2) {
+    trainData = getGivenSnippets(prepareData(TRAIN_PATH)).map(sample => formatSnippetWithRegions(sample));
+    testData = getUnGivenSnippets(prepareData(TEST_PATH)).map(sample => formatSnippetWithRegions(sample));
   }
 }
 
@@ -48,7 +48,7 @@ function train(movie) {
       trainData.map(sample => sample.requirement + sample.code + '\n').join(''))
   }
   // writeInstructions('\n\n/* Till here - training\n')
-  submit()
+  // submit()
 }
 
 function test() {
