@@ -1,7 +1,7 @@
 // const URL = 'https://beta.openai.com/codex-javascript-sandbox'
 const URL = 'https://beta.openai.com/playground'
-const TRAIN_PATH = 'src/main/resources/train/Magento'
-const TEST_PATH = 'src/main/resources/test/MeetTheBanker'
+const TRAIN_PATH ="src/main/resources/train/Store"
+const TEST_PATH = "src/main/resources/train/Store"
 const MOVIE = false
 let trainData = []
 let testData = []
@@ -18,9 +18,19 @@ function preparePlayground(movie) {
   // changeLanguage('JavaScript\n')
 }
 
-function loadData() {
-  trainData = prepareData(TRAIN_PATH, '.js')//for data 2 version, call get getGivenSnippets(prepareData(TRAIN_PATH))
-  testData = prepareData(TEST_PATH, '.txt')//for data 2 version, call get getUnGivenSnippets(prepareData(TEST_PATH))
+/**
+ * @param dataOneOrTwo 1 for the data.js configuration(for back support), 2 for the data2.js configuration(new implementation)
+ */
+function loadData(dataOneOrTwo) {
+  if (dataOneOrTwo == 1) {
+    trainData = prepareData(TRAIN_PATH, '.js')
+    testData = prepareData(TEST_PATH, '.txt')
+
+  }
+    else if (dataOneOrTwo == 2) {
+    trainData = getGivenSnippets(prepareData(TRAIN_PATH)).map(sample => formatSnippet(sample));
+    testData = getUnGivenSnippets(prepareData(TEST_PATH)).map(sample => formatSnippet(sample));
+  }
 }
 
 function train(movie) {
@@ -49,7 +59,9 @@ function test() {
 }
 
 bthread('train', function () {
-  loadData()
+  loadData(2)
+  //print(trainData) using bp.log.info(trainData)
+
   preparePlayground(MOVIE)
   train(MOVIE)
   test()

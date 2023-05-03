@@ -29,7 +29,7 @@ public class Main {
   }
 
   private void createBProgam() throws IOException {
-    this.bprog = new ContextBProgram("data/data.js", "js/EventDef.js", "js/NLP.dal.js", "js/NLP.story.js");
+    this.bprog = new ContextBProgram("data/data2.js", "js/EventDef.js", "js/NLP.dal.js", "js/NLP.story.js");
 //     bprog.setEventSelectionStrategy(new PrioritizedBSyncEventSelectionStrategy());
   }
 
