@@ -15,17 +15,12 @@ function snippet(requirement, code) {
   return { requirement: requirement, code: code, isGiven: false }
 }
 
-//for backward compatibility
-function prepareData(path) {
-  return parseSnippetsFile(path)
-}
-
 /**
  * Parses a snippets file and returns an array of snippets objects
- * @param filename
+ * @param path
  * @returns {snippet[]}
  */
-function parseSnippetsFile(path) {
+function parseSnippetsFile(path, verbose) {
   let files = listFiles(path, 'js')
   bp.log.info('files: ' + files.map(f => f.toString()))
   let data = files.map(f => loadFile(f)).join('')
@@ -35,6 +30,7 @@ function parseSnippetsFile(path) {
   let isRegion = false
 
   for (let i = 0; i < lines.length; i++) {
+    if(verbose) bp.log.info('line: ' + lines[i])
     if (lines[i].startsWith('//region')) {
       isRegion = true
       continue
@@ -46,6 +42,7 @@ function parseSnippetsFile(path) {
     let lineStartsWithRequirement = ''
     if (lines[i].startsWith('//Requirement:')) {
       lineStartsWithRequirement = '//Requirement:'
+      if (verbose) bp.log.info('lineStartsWithRequirement: ' + lineStartsWithRequirement)
     }
     if (lineStartsWithRequirement !== '') {
       currentSnippet.requirement = lines[i].slice(lineStartsWithRequirement.length).trim()
@@ -54,10 +51,10 @@ function parseSnippetsFile(path) {
         currentSnippet.requirement += lines[i] + '\n'
         i++
       }
+      i--
     }
     if (lines[i].trim().startsWith('//Output:')) {
       //The code starts in the next line and ends in a line that starts with //endregion or //region or //Requirement(not including) or end of file
-      i++
       currentSnippet.code = ''
       while (i < lines.length && !lines[i].trim().startsWith('//region') && !lines[i].trim().startsWith('//endregion') && !lines[i].trim().startsWith('//Requirement:')) {
         currentSnippet.code += lines[i] + '\n'
@@ -66,16 +63,12 @@ function parseSnippetsFile(path) {
       currentSnippet.code = currentSnippet.code.slice(0, -1)
       i--
     }
-    // else if (line.startsWith('//')) {
-    //   // Ignore other comments
-    // }
-    // else {
-    //   currentSnippet.code += line + '\n';
-    // }
 
-    if (currentSnippet.requirement && currentSnippet.code) {
+    if (currentSnippet.requirement) {
       // bp.log.info(currentSnippet.requirement);
       currentSnippet.isGiven = isRegion
+      currentSnippet.requirement = currentSnippet.requirement.trim()
+      currentSnippet.code = currentSnippet.code.trim()
       snippets.push(currentSnippet)
       currentSnippet = snippet('', '')
     }

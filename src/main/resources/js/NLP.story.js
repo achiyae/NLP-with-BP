@@ -19,11 +19,8 @@ function preparePlayground(movie) {
 }
 
 function loadData() {
-  trainData = getGivenSnippets(prepareData(TRAIN_PATH)).map(sample => formatSnippetWithRegions(sample))
-  testData = getUnGivenSnippets(prepareData(TEST_PATH))
-  bp.log.info('ungiven snippets: ' + testData)
-  testData=testData.map(sample => formatSnippetWithRegions(sample))
-  bp.log.info('ungiven snippets: ' + testData)
+  trainData = getGivenSnippets(parseSnippetsFile(TRAIN_PATH)).map(sample => formatSnippetWithRegions(sample))
+  testData = getUnGivenSnippets(parseSnippetsFile(TEST_PATH)).map(sample => formatSnippetWithRegions(sample))
 }
 
 function train(movie) {
