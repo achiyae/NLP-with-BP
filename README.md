@@ -1,10 +1,7 @@
 # Running
 1. Run [chrome.bat](chrome.bat).
-2. First time only: open [https://beta.openai.com/playground](https://beta.openai.com/playground) and login.
-3. Run in different shell:
-```shell 
-java -jar selenium.jar standalone
-```
+2. It will open on [https://beta.openai.com/playground](https://beta.openai.com/playground), login to playground (if needed).
+
 # Configuration
 * for using the first/second format, call the load data function(called in the bthread "train", in NLP.story.js) with 1/2 accordingly.
     - the first format is the default.

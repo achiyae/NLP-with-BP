@@ -1,14 +1,14 @@
 // const URL = 'https://beta.openai.com/codex-javascript-sandbox'
 const URL = 'https://beta.openai.com/playground'
-const TRAIN_PATH ="src/main/resources/train/Store"
-const TEST_PATH = "src/main/resources/train/Store"
+const TRAIN_PATH = 'src/main/resources/projects/Magento'
+const TEST_PATH = 'src/main/resources/projects/Magento'
 const MOVIE = false
 let trainData = []
 let testData = []
 
 function preparePlayground(movie) {
   startSession(URL)
-  changeStopSequence('/*\n//region\n//Requirement') //\n\n\n\n
+  changeStopSequence('/*\n//region\n//Requirement:') //\n\n\n\n
   changeModel('text-davinci-003\n')
   changeMaxTokens('1300')
   changeTemperature('0')
@@ -18,19 +18,12 @@ function preparePlayground(movie) {
   // changeLanguage('JavaScript\n')
 }
 
-/**
- * @param dataOneOrTwo 1 for the data.js configuration(for back support), 2 for the data2.js configuration(new implementation)
- */
-function loadData(dataOneOrTwo) {
-  if (dataOneOrTwo === 1) {
-    trainData = prepareData(TRAIN_PATH, '.js')
-    testData = prepareData(TEST_PATH, '.txt')
-
-  }
-    else if (dataOneOrTwo === 2) {
-    trainData = getGivenSnippets(prepareData(TRAIN_PATH)).map(sample => formatSnippetWithRegions(sample));
-    testData = getUnGivenSnippets(prepareData(TEST_PATH)).map(sample => formatSnippetWithRegions(sample));
-  }
+function loadData() {
+  trainData = getGivenSnippets(prepareData(TRAIN_PATH)).map(sample => formatSnippetWithRegions(sample))
+  testData = getUnGivenSnippets(prepareData(TEST_PATH))
+  bp.log.info('ungiven snippets: ' + testData)
+  testData=testData.map(sample => formatSnippetWithRegions(sample))
+  bp.log.info('ungiven snippets: ' + testData)
 }
 
 function train(movie) {
@@ -59,7 +52,7 @@ function test() {
 }
 
 bthread('train', function () {
-  loadData(2)
+  loadData()
   //print(trainData) using bp.log.info(trainData)
 
   preparePlayground(MOVIE)

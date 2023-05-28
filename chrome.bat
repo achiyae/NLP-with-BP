@@ -11,4 +11,4 @@ if exist %chrome64% (
     echo Chrome not found
     exit /b 1
 )
-%chrome% --remote-debugging-port=9222 --user-data-dir="%~dp0%userdir"
+%chrome% https://platform.openai.com/playground --remote-debugging-port=9222 --user-data-dir="%~dp0%userdir"
