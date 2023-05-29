@@ -1,6 +1,16 @@
 # Running
 1. Run [chrome.bat](chrome.bat).
-2. It will open on [https://beta.openai.com/playground](https://beta.openai.com/playground), login to playground (if needed).
+2. It will open on [https://beta.openai.com/playground](https://beta.openai.com/playground), login to playground (if needed). No need to do anything there.
+3. Run Main class (i.e., [Main](src/main/java/Main.java)). This can be done by running:
+```bash
+mvn exec:java
+```
+
+You can also create an uber-jar and run it:
+```bash
+mvn -P"uber-jar" clean package
+java -jar .\target\SampleBPProject-0.6-DEV.uber.jar
+```
 
 # Configuration
 * Set the project you wish to run (e.g., [src/main/resources/projects/Magento](src/main/resources/projects/Magento)).
