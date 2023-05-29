@@ -1,4 +1,7 @@
+//region
+//Requirement:
 /* 2.2 The two players X O take turns marking the cells */
+//Output:
 function markCell(player, cell) {
     return Event('mark', { player: player.id, cell: cell.id })
 }
@@ -15,15 +18,23 @@ ctx.bthread('2.2 The players take turns marking the cells', function () {
         sync({ waitFor: AnyMarkPlayer(ctx.getEntityById('O')), block: AnyMarkPlayer(ctx.getEntityById('X')) })
     }
 })
+//endregion
 
+//region
+//Requirement:
 /* 3. Each cell can be marked only once.*/
+//Output:
 ctx.bthread('3. Each cell can be marked only once.', 'Cell', function (cell) {
     sync({ waitFor: AnyMarkCell(cell) })
     sync({ block: AnyMarkCell(cell) })
 })
+//endregion
 
+//region
+//Requirement:
 /*4. The first player to mark 3 cells in a row wins.
 5. if all 9 cells of the board have been marked with X and O, but no player won, the game is over.*/
+//Output:
 function win(player) {
     return Event('win', { player: player.id })
 }
@@ -46,3 +57,4 @@ bthread('5. When all 9 cells have been marked with X and O and no player won, it
     sync({ request: tie(), block: tie().negate().minus(AnyWin) })
     sync({ block: bp.all })
 })
+//endregion

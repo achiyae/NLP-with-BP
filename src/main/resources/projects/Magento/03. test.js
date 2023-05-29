@@ -1,16 +1,14 @@
 
 //Requirement:
 /* a user has a password and email */
-//Output:
 
 //Requirement:
 /* 1.1 there are three meeting types: 'personal banker', 'Investment', and 'cashier'.
  1.2 Each meeting type has the following possible topics:
-Investment: it1, it2, it3
+ Investment: it1, it2, it3
 Personal banker: pt1, pt2, pt3, pt4
 Cashier: ct1, ct2
 */
-//Output:
 
 //Requirement:
 /*
@@ -22,9 +20,7 @@ To set up a meeting, the user must do the following actions:
 5. add contact details (name, email, and phone number)
 6. confirm the meeting
 */
-//Output:
 
 //Requirement:
 /* If the selected meeting is Cashier, then block the 'choose a time' action while selecting a branch. The possible branches are: Beer-sheva, TLV, Jerusalem
 */
-//Output:

@@ -1,7 +1,7 @@
 // const URL = 'https://beta.openai.com/codex-javascript-sandbox'
 const URL = 'https://beta.openai.com/playground'
 const TRAIN_PATH = 'src/main/resources/projects/Magento'
-const TEST_PATH = 'src/main/resources/projects/Magento'
+const TEST_PATH = TRAIN_PATH //can also point to a different directory
 const MOVIE = false
 let trainData = []
 let testData = []
@@ -19,8 +19,8 @@ function preparePlayground(movie) {
 }
 
 function loadData() {
-  trainData = getGivenSnippets(parseSnippetsFile(TRAIN_PATH)).map(sample => formatSnippetWithRegions(sample))
-  testData = getUnGivenSnippets(parseSnippetsFile(TEST_PATH)).map(sample => formatSnippetWithRegions(sample))
+  trainData = getTrainSnippets(parseSnippetsFile(TRAIN_PATH, true)).map(sample => formatSnippetWithRegions(sample))
+  testData = getTestSnippets(parseSnippetsFile(TEST_PATH)).map(sample => formatSnippetWithRegions(sample))
 }
 
 function train(movie) {
@@ -43,9 +43,13 @@ function train(movie) {
 
 function test() {
   for (let i = 0; i < testData.length; i++) {
-    writeInstructions('\n' + testData[i].requirement, 60)
+    writeInstructions('\n\n' + testData[i].requirement, 60)
     submit()
   }
+}
+
+function exportData() {
+  exportSnippets(trainData, TRAIN_PATH)
 }
 
 bthread('train', function () {

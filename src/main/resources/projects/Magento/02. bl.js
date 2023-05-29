@@ -1,4 +1,3 @@
-
 //region
 //Requirement:
 /* Each product has: id, type, color, and size */

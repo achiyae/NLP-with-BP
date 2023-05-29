@@ -1,4 +1,7 @@
+//region
+//Requirement:
 /*  1. The game is played on a grid of 3x3 cells.*/
+//Output:
 const boardWidth = 3
 const boardHeight = 3
 let cells = []
@@ -9,13 +12,21 @@ for (let i = 0; i < boardWidth; i++) {
 }
 ctx.populateContext(cells)
 ctx.registerQuery('Cell', entity => entity.type == String('cell'))
+//endregion
 
+//region
+//Requirement:
 /*  2.1 The game is played by two players, X and O */
+//Output:
 let players = [ctx.Entity('X', 'player'), ctx.Entity('O', 'player')]
 ctx.populateContext(players)
 ctx.registerQuery('Player', entity => entity.type == String('player'))
+//endregion
 
+//region
+//Requirement:
 /*  4. The first player to mark 3 cells in a row wins. */
+//Output:
 let rowLength = 3
 let rows = []
 for (let i = 0; i < boardWidth; i++) {
@@ -56,3 +67,4 @@ for (let i = 0; i < boardWidth - (rowLength - 1); i++) {
 }
 ctx.populateContext(rows)
 ctx.registerQuery('3CellsInARow', entity => entity.type == String('3CellsInARow'))
+//endregion

@@ -1,3 +1,14 @@
+/**
+ * Writes the given data to the given file
+ * @param {string}projectName the name of the project including ascii letters and numbers only
+ * @param {string}data the data to write
+ */
+function exportData(projectName, data) {
+  let filePath = java.nio.file.Paths('exports', projectName + '.js')
+  java.nio.file.Files.write(filePath, data.getBytes())
+}
+
+
 function loadFile(path) {
   let filePath = java.nio.file.Path.of(path)
   let bytes = java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(filePath))
@@ -11,67 +22,99 @@ function listFiles(path, type) {
   return files.map(p => p.toString()).toArray()
 }
 
-function snippet(requirement, code) {
-  return { requirement: requirement, code: code, isGiven: false }
+/**
+ * Create a new snippet object
+ * @param {string}[requirement='']
+ * @param {string}[code='']
+ * @param {boolean}[train=false]
+ * @returns {{code: string, requirement: string, train: boolean}}
+ */
+function snippet(requirement, code, train) {
+  if(!requirement) requirement = ''
+  if(!code) code = ''
+  if(!train) train = false
+  return { requirement: requirement, code: code, train: train }
+}
+
+function addSnippetIfNonEmpty(snippets, snippet, verbose) {
+  snippet.requirement = snippet.requirement.trim()
+  snippet.code = snippet.code.trim()
+  if (snippet.requirement !== '' || snippet.code !== '') {
+    snippets.push(snippet)
+    if (verbose)
+      bp.log.info('Added snippet: ' + JSON.stringify(snippet))
+    return true
+  }
+  return false
+}
+
+/**
+ * Returns true iff the given line starts with one of the given prefixes
+ * @param {string}line
+ * @param {string|string[]}prefixes
+ * @returns {boolean}
+ */
+function lineStartsWith(line, prefixes) {
+  if(!Array.isArray(prefixes)){
+    prefixes = [prefixes]
+  }
+  for (let i = 0; i < prefixes.length; i++) {
+    if (line.startsWith(prefixes[i])) {
+      return true
+    }
+  }
+  return false
 }
 
 /**
  * Parses a snippets file and returns an array of snippets objects
  * @param path
+ * @param {boolean}[verbose=false] prints debug logs
  * @returns {snippet[]}
  */
 function parseSnippetsFile(path, verbose) {
   let files = listFiles(path, 'js')
   bp.log.info('files: ' + files.map(f => f.toString()))
-  let data = files.map(f => loadFile(f)).join('')
-  const lines = data.split('\n')
-  const snippets = []
-  let currentSnippet = snippet('', '')
-  let isRegion = false
+  let data = files.map(f => loadFile(f)).join('\n').replace(/\r/g, '')
+  let lines = data.split('\n')
+  let snippets = []
+  let currentSnippet = snippet()
 
   for (let i = 0; i < lines.length; i++) {
-    if(verbose) bp.log.info('line: ' + lines[i])
-    if (lines[i].startsWith('//region')) {
-      isRegion = true
-      continue
-    }
-    if (lines[i].startsWith('//endregion')) {
-      isRegion = false
-      continue
-    }
-    let lineStartsWithRequirement = ''
-    if (lines[i].startsWith('//Requirement:')) {
-      lineStartsWithRequirement = '//Requirement:'
-      if (verbose) bp.log.info('lineStartsWithRequirement: ' + lineStartsWithRequirement)
-    }
-    if (lineStartsWithRequirement !== '') {
-      currentSnippet.requirement = lines[i].slice(lineStartsWithRequirement.length).trim()
+    if (verbose) bp.log.info('line: ' + lines[i])
+    if (lineStartsWith(lines[i], '//region')) {
+      addSnippetIfNonEmpty(snippets, currentSnippet)
+      currentSnippet = snippet('','', true)
+    } else if (lineStartsWith(lines[i], '//endregion')) {
+      addSnippetIfNonEmpty(snippets, currentSnippet)
+      currentSnippet = snippet()
+    } else if (lineStartsWith(lines[i], '//Requirement:')) {
+      if(!currentSnippet.train) {
+        addSnippetIfNonEmpty(snippets, currentSnippet)
+        currentSnippet = snippet()
+      }
+      currentSnippet.requirement = lines[i].slice('//Requirement:'.length).trim()
       i++
-      while (i < lines.length && !lines[i].trim().startsWith('//Output:')) {
+      while (i < lines.length &&
+             !lineStartsWith(lines[i], ['//Output:', '//region', '//endregion', '//Requirement:'])) {
+        if (verbose) bp.log.info('line: ' + lines[i])
         currentSnippet.requirement += lines[i] + '\n'
         i++
       }
       i--
-    }
-    if (lines[i].trim().startsWith('//Output:')) {
-      //The code starts in the next line and ends in a line that starts with //endregion or //region or //Requirement(not including) or end of file
-      currentSnippet.code = ''
-      while (i < lines.length && !lines[i].trim().startsWith('//region') && !lines[i].trim().startsWith('//endregion') && !lines[i].trim().startsWith('//Requirement:')) {
+    } else if (lineStartsWith(lines[i],'//Output:')) {
+      i++
+      while (i < lines.length &&
+             !lineStartsWith(lines[i], ['//region', '//endregion', '//Requirement:'])) {
+        if (verbose) bp.log.info('line: ' + lines[i])
         currentSnippet.code += lines[i] + '\n'
         i++
       }
-      currentSnippet.code = currentSnippet.code.slice(0, -1)
       i--
     }
-
-    if (currentSnippet.requirement) {
-      // bp.log.info(currentSnippet.requirement);
-      currentSnippet.isGiven = isRegion
-      currentSnippet.requirement = currentSnippet.requirement.trim()
-      currentSnippet.code = currentSnippet.code.trim()
-      snippets.push(currentSnippet)
-      currentSnippet = snippet('', '')
-    }
+  }
+  if(addSnippetIfNonEmpty(snippets, currentSnippet) && verbose) {
+    bp.log.info('Added snippet: ' + JSON.stringify(currentSnippet))
   }
   bp.log.info('loaded ' + snippets.length + ' snippets from ' + path)
   // bp.log.info(snippets)
@@ -79,16 +122,12 @@ function parseSnippetsFile(path, verbose) {
   return snippets
 }
 
-function getGivenSnippets(snippets) {
-  return snippets.filter(s => s.isGiven)
+function getTrainSnippets(snippets) {
+  return snippets.filter(s => s.train)
 }
 
-function getUnGivenSnippets(snippets) {
-  return snippets.filter(s => !s.isGiven)
-}
-
-function getRequirements(snippets) {
-  return snippets.map(s => s.requirement)
+function getTestSnippets(snippets) {
+  return snippets.filter(s => !s.train)
 }
 
 /**
@@ -97,14 +136,21 @@ function getRequirements(snippets) {
  */
 function getRequirementWithFormat(snippet) {
   //if requirement starts with /*, add it in a separate line
-  if (snippet.requirement.trim().startsWith('/*')) {
+  if (snippet.requirement.startsWith('/*')) {
     return '//Requirement:\n' + snippet.requirement + '\n'
+  } else if (snippet.requirement !== ('')) {
+    return '//Requirement: ' + snippet.requirement + '\n'
+  } else {
+    return ''
   }
-  return '//Requirement: ' + snippet.requirement + '\n'
 }
 
 function getOutputWithFormat(snippet) {
-  return '//Output:\n' + snippet.code
+  if(snippet.requirement !== ('')) {
+    return '//Output:\n' + snippet.code
+  } else {
+    return snippet.code
+  }
 }
 
 function formatSnippetWithoutRegions(snippetExample) {
@@ -112,38 +158,8 @@ function formatSnippetWithoutRegions(snippetExample) {
 }
 
 function formatSnippetWithRegions(snippetExample) {
-  if (snippetExample.isGiven)
-    return snippet('//region\n' + getRequirementWithFormat(snippetExample), getOutputWithFormat(snippetExample) + '\n//endregion')
+  if (snippetExample.train)
+    return snippet('//region\n' + getRequirementWithFormat(snippetExample), getOutputWithFormat(snippetExample) + '\n//endregion', true)
   else
-    return formatSnippetWithoutRegions(snippetExample)
+    return snippet(getRequirementWithFormat(snippetExample), getOutputWithFormat(snippetExample))
 }
-
-// function formatSnippet(snippetExample) {
-//     return snippet(getRequirementWithFormat(snippetExample), getOutputWithFormat(snippetExample));
-// }
-
-// const snippets = parseSnippetsFile('store_entities_behaviors_updated.js');
-// console.log(snippets);
-// //print only the given snippets, in the format of the original file
-// for (let i = 0; i < snippets.length; i++) {
-//     const snippet = snippets[i];
-//     if (snippet.isGiven) {
-//       console.log('//region');
-//     }
-//       //if requirement starts with /*, print it in a separate line
-//       if (snippet.requirement.trim().startsWith('/*')) {
-//           console.log('//Requirement:');
-//
-//           console.log(snippet.requirement);
-//       }
-//       else {
-//         console.log('//Requirement: ' + snippet.requirement);
-//       }
-//       console.log('//Output:');
-//       console.log(snippet.code);
-//     if (snippet.isGiven)
-//       console.log('//endregion');
-//     if (i < snippets.length - 1)
-//       console.log();
-//
-// }
